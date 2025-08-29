@@ -24,7 +24,7 @@ async def start_handler(msg:Message):
         await msg.answer('Hello admin', reply_markup=admin_keyboard)
     else:
         from keyboards.user_keyboards import user_keyboard
-        await msg.answer('Привет! Вот твоё меню:', reply_markup=user_keyboard)
+        await msg.answer('Привет пользователь вот твое меню:', reply_markup=user_keyboard)
 
 @admin_router.message(F.text == "➕ Добавить услугу")
 async def add_service_text_handler(message: Message, state: FSMContext):
