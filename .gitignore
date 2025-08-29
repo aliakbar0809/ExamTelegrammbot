@@ -1,0 +1,18 @@
+venv/
+.venv/
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Логи
+*.log
+
+# Настройки IDE
+.vscode/
+.idea/
+
+# Настройки IDE
+.env
