@@ -28,3 +28,15 @@ class User:
                 return is_staff['is_staff'] if is_staff else False
         except Exception as e:
             print('Error check status:', e)
+
+
+    async def get_user(self) -> bool:
+        try:
+            async with self.db.pool.acquire() as conn:
+                user = await conn.fetchrow("""
+        SELECT id FROM users WHERE telegram_id = $1
+    """,self.telegram_id)
+                return True if user else False
+        except Exception as e:
+            print('Error from get user',e)
+

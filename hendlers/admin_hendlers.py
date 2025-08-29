@@ -3,19 +3,28 @@ from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
+from database.user import User
 from config import db
 from database.service import Service
 from database.queueEntry import QueueEntry
 from keyboards.admin_keyboards import admin_keyboard
+
 from states.admin_states import AdminStates
 
 admin_router = Router()
 
-@admin_router.message(Command("start"))
-async def start_admin(message: Message):
-    user = await db.pool.fetchrow("SELECT is_staff FROM users WHERE telegram_id=$1", message.from_user.id)
-    if user and user["is_staff"]:
-        await message.answer("Добро пожаловать, админ!", reply_markup=admin_keyboard)
+@admin_router.message(Command('start'))
+async def start_handler(msg:Message):
+    u1 = User(msg.from_user.id,msg.from_user.username,msg.from_user.full_name, db)
+    user = await u1.get_user()
+    if not user:
+        await u1.save()
+    
+    if await u1.check_status():
+        await msg.answer('Hello admin', reply_markup=admin_keyboard)
+    else:
+        from keyboards.user_keyboards import user_keyboard
+        await msg.answer('Привет! Вот твоё меню:', reply_markup=user_keyboard)
 
 @admin_router.message(F.text == "➕ Добавить услугу")
 async def add_service_text_handler(message: Message, state: FSMContext):

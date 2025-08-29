@@ -13,28 +13,6 @@ from states.user_states import UserStates
 
 user_router = Router()
 
-@user_router.message(Command("start"))
-async def register_user(message: Message):
-    
-    user_data = await db.pool.fetchrow("SELECT * FROM users WHERE telegram_id=$1", message.from_user.id)
-
-    if not user_data:
-        user = User(
-            telegram_id=message.from_user.id,
-            username=message.from_user.username,
-            fullname=message.from_user.full_name,
-            db=db
-        )
-        await user.save()
-        user_data = await db.pool.fetchrow("SELECT * FROM users WHERE telegram_id=$1", message.from_user.id)
-
-    
-    if user_data["is_staff"]:
-        await message.answer("Вы админ ✅", reply_markup=admin_keyboard)
-    else:
-        await message.answer("Добро пожаловать, вы зарегистрированы как пользователь 👤", reply_markup=user_keyboard)
-
-
 @user_router.message(F.text == "📋 Посмотреть услуги")
 async def view_services(message: Message):
     services = await Service("", 0, 0, db).get_all()
